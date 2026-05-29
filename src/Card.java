@@ -30,7 +30,7 @@ public class Card {
             value = 1;
         } else if (v.equals("10")) {
             value = 10;
-         } else {
+        } else {
             value = Integer.parseInt(v.substring(1));
         }
     }

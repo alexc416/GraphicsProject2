@@ -6,8 +6,8 @@ public class Deck {
 
     public Deck() {
         String[] suits = {"clubs", "diamonds", "hearts", "spades"};
-        String[] vals = {"A", "02", "03", "04", "05", "06", "07", "08", "09", "10", "J", "Q", "K"};
-
+        //String[] vals = {"A", "02", "03", "04", "05", "06", "07", "08", "09", "10", "J", "Q", "K"};
+        String[] vals = {"A", "10", "06", "05"};
         for (String s : suits) {
             for (String v : vals) {
                 deck.add(new Card(s, v));
@@ -24,9 +24,14 @@ public class Deck {
     }
 
     public Card getRandomCard() {
-        int n = (int) (Math.random() * deck.size());
-        Card out = deck.get(n);
-        deck.remove(n);
+        Card out;
+        if (deck.size() > 0) {
+            int n = (int) (Math.random() * deck.size());
+            out = deck.get(n);
+            deck.remove(n);
+        } else {
+            out = null;
+        }
         return out;
     }
 
