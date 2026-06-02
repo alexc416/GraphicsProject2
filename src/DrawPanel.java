@@ -16,6 +16,8 @@ class DrawPanel extends JPanel implements MouseListener {
     private Rectangle resetGameButton;
     private Boolean gameStatus;
 
+    private ArrayList<Animation> animations = new ArrayList<>();
+
     public DrawPanel() {
         grid = new Card[3][3];
         d = new Deck();
@@ -28,6 +30,12 @@ class DrawPanel extends JPanel implements MouseListener {
         //currdentCard = d.getRandomCard();
 
         this.addMouseListener(this);
+    }
+
+    private void testAni(Card card, int gridX, int gridY) {
+        int targetX = 460; 
+        int targetY = 430;
+        animations.add(new Animation(card, gridX, gridY, targetX, targetY, 500)); 
     }
 
     protected void paintComponent(Graphics g) {
@@ -99,6 +107,16 @@ class DrawPanel extends JPanel implements MouseListener {
             x = 50;
         }
 
+        for (int i = animations.size() - 1; i >= 0; i--) {
+            if (animations.get(i).isFinished()) {
+                animations.remove(i);
+            }
+        }
+
+        for (Animation a : animations) {
+            g.drawImage(a.getCard().getImage(), (int) a.getCurrentX(), (int) a.getCurrentY(), null);
+        }
+
         if ((gameStatus == false || winnable == false) && numOfShownCards != 0) {
             g.drawString("YOU LOSE, CLICK TO PLAY AGAIN", 100, 300);
         }
@@ -164,6 +182,7 @@ class DrawPanel extends JPanel implements MouseListener {
                             for (int k = 0; k < 3; k++) {
                                 if (grid[j][k] != null) {
                                     if (c.equals(grid[j][k])) {
+                                        testAni(c, grid[j][k].getHitbox().x, grid[j][k].getHitbox().y);
                                         grid[j][k] = d.getRandomCard();
                                     }
                                 }
@@ -174,6 +193,7 @@ class DrawPanel extends JPanel implements MouseListener {
                 }
             }
             if (resetGameButton.contains(p)) {
+                animations.clear();
                 gameStatus = true;
                 d = new Deck();
                 selectedCards = new ArrayList<>();
