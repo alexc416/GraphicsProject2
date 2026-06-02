@@ -32,7 +32,7 @@ class DrawPanel extends JPanel implements MouseListener {
         this.addMouseListener(this);
     }
 
-    private void testAni(Card card, int gridX, int gridY) {
+    private void dragOut(Card card, int gridX, int gridY) {
         int targetX = 460; 
         int targetY = 430;
         animations.add(new Animation(card, gridX, gridY, targetX, targetY, 500)); 
@@ -55,8 +55,10 @@ class DrawPanel extends JPanel implements MouseListener {
         for (int j = 0; j < 3; j++) {
             for (int k = 0; k < 3; k++) {
                 Card c1 = grid[j][k];
+
                 for (int o = 0; o < 3; o++) {
                     for (int p = 0; p < 3; p++) {
+
                         if (j != o || k != p) {
                             Card c2 = grid[o][p];
                             if (!(c1 == null) && !(c2 == null)) {
@@ -97,6 +99,7 @@ class DrawPanel extends JPanel implements MouseListener {
                 if (grid[j][k] != null) {
                     g.drawImage(grid[j][k].getImage(), x, y, null);
                     grid[j][k].setHitbox(new Rectangle(x, y, grid[j][k].getHitbox().width,  grid[j][k].getHitbox().height));
+
                     if (grid[j][k].getShowHitbox()) {
                         g.drawRect(x, y, grid[j][k].getHitbox().width, grid[j][k].getHitbox().height);
                     }
@@ -112,25 +115,32 @@ class DrawPanel extends JPanel implements MouseListener {
                 animations.remove(i);
             }
         }
-
         for (Animation a : animations) {
             g.drawImage(a.getCard().getImage(), (int) a.getCurrentX(), (int) a.getCurrentY(), null);
         }
 
         if ((gameStatus == false || winnable == false) && numOfShownCards != 0) {
-            g.drawString("YOU LOSE, CLICK TO PLAY AGAIN", 100, 300);
+            g.drawString("YOU LOSE, CLICK TO PLAY AGAIN", 100, 250);
         }
         if (numOfShownCards == 0) {
-            g.drawString("CONGRATS YOU WON", 100, 300);
+            g.drawString("CONGRATS YOU WON", 100, 250);
         }
-//        if (d.getDeck().size() == 0) {
-//            g. drawString("YOU WIN, WOAH CONGRATS!!!", 100, 300);
-//        }
         g.drawRect(replaceCardsButton.x, replaceCardsButton.y, replaceCardsButton.width, replaceCardsButton.height);
         g.drawString("REPLACE CARDS", 300, 75);
         g.drawRect(resetGameButton.x, resetGameButton.y, resetGameButton.width, resetGameButton.height);
         g.drawString("PLAY AGAIN", 300, 150);
-        g.drawString("Cards Left: " + d.getDeck().size(), 100, 400);
+        g.drawString("Cards Left: " + d.getDeck().size(), 100, 300);
+
+        int displayX = 0;
+        int displayY = 330;
+        for (Card c : d.getDeck()) {
+            g.drawImage(c.getImage(), displayX, displayY, null);
+            displayX += 20;
+            if (displayX > 430 & displayY == 330) {
+                displayX = 0;
+                displayY += 40;
+            }
+        }
     }
 
     public void refreshGrid() {
@@ -146,14 +156,17 @@ class DrawPanel extends JPanel implements MouseListener {
         int button = e.getButton();
 
         if (button == 1) {
-            if (selectedCards.size() != 0 && replaceCardsButton.contains(p) && selectedCards.size() < 3) {
+            if (selectedCards.size() != 0 && replaceCardsButton.contains(p)) {
                 int sum = 0;
-                for (Card c : selectedCards) {
-                    System.out.println(c);
-                    System.out.println(c.getValue());
-                    sum += c.getValue();
+                if (selectedCards.size() < 3) {
+                    for (Card c : selectedCards) {
+//                        System.out.println(c);
+//                        System.out.println(c.getValue());
+                        sum += c.getValue();
+                    }
+                    System.out.println(sum);
                 }
-                System.out.println(sum);
+
                 boolean containsJack = false;
                 boolean containsQueen = false;
                 boolean containsKing = false;
@@ -168,21 +181,24 @@ class DrawPanel extends JPanel implements MouseListener {
                                 containsQueen = true;
                             }
                             if (grid[j][k].getValue() == 17) {
+                                System.out.println("FOUND KING AT" + j + " " + k);
                                 containsKing = true;
                             }
                         }
                     }
                 }
+                System.out.println(containsJack + " " + containsQueen + " " + containsKing);
                 if (containsJack && containsQueen && containsKing) {
                     selectedTriple = true;
                 }
                 if (sum == 11 || selectedTriple) {
                     for (Card c : selectedCards) {
+
                         for (int j = 0; j < 3; j++) {
                             for (int k = 0; k < 3; k++) {
                                 if (grid[j][k] != null) {
                                     if (c.equals(grid[j][k])) {
-                                        testAni(c, grid[j][k].getHitbox().x, grid[j][k].getHitbox().y);
+                                        dragOut(c, grid[j][k].getHitbox().x, grid[j][k].getHitbox().y);
                                         grid[j][k] = d.getRandomCard();
                                     }
                                 }

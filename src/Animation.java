@@ -19,16 +19,12 @@ public class Animation {
         return Math.min((System.currentTimeMillis() - startTime) / (double) duration, 1.0);
     }
 
-    private double motion(double t) {
-        return t;
-    }
-
     public double getCurrentX() {
-        return startX + (endX - startX) * motion(getT());
+        return startX + (endX - startX) * getT();
     }
 
     public double getCurrentY() {
-        return startY + (endY - startY) * motion(getT());
+        return startY + (endY - startY) * getT();
     }
 
     public boolean isFinished() {
