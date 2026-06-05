@@ -106,17 +106,22 @@ class DrawPanel extends JPanel implements MouseListener {
 
         for (int i = animations.size() - 1; i >= 0; i--) {
             if (animations.get(i).isFinished()) {
-                if (!animations.get(i).isGrid()) {
-                    animations.remove(i);
+                if (animations.get(i).isGrid()) {
+                    int gridX = (int) (animations.get(i).getCurrentX() - 50) / 80;
+                    int gridY = (int) (animations.get(i).getCurrentY() - 10) / 80;
+                    grid[gridY][gridX] = animations.get(i).getCard();
                 }
+                animations.remove(i);
             }
         }
         for (Animation a : animations) {
             g.drawImage(a.getCard().getImage(), (int) a.getCurrentX(), (int) a.getCurrentY(), null);
         }
 
-        if ((gameStatus == false || winnable == false) && numOfShownCards != 0) {
-            g.drawString("YOU LOSE, CLICK TO PLAY AGAIN", 100, 258);
+        if (animations.isEmpty()) {
+            if ((gameStatus == false || winnable == false) && numOfShownCards != 0) {
+                g.drawString("YOU LOSE, CLICK TO PLAY AGAIN", 100, 258);
+            }
         }
         if (numOfShownCards == 0) {
             g.drawString("CONGRATS YOU WON", 100, 280);
@@ -190,10 +195,16 @@ class DrawPanel extends JPanel implements MouseListener {
                                 if (grid[j][k] != null) {
                                     if (c.equals(grid[j][k])) {
                                         animations.add(new Animation(c, grid[j][k].getHitbox().x, grid[j][k].getHitbox().y, 460, 430, 500, false));
-                                        Card randomCard = d.getRandomCard();
+
+                                        if (d.getDeck().size() > 0) {
+                                            int n = (int) (Math.random() * d.getDeck().size());
+                                            Card randomCard = d.getCard(n);
+                                            int endX = k * 80 + 50;
+                                            int endY = j * 80 + 10;
+                                            animations.add(new Animation(randomCard, (n * 20) % 430, 330, endX, endY, 500, true));
+                                            d.removeCard(n);
+                                        }
                                         grid[j][k] = null;
-                                        //FIX FIX FIX, IN PROGRESS
-                                        animations.add(new Animation(randomCard, randomCard.getHitbox().x, randomCard.getHitbox().y, 100, 100, 500, true));
                                     }
                                 }
                             }
